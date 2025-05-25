@@ -5,9 +5,9 @@
 </p>
 
 <p align="center">
-    <a href="https://github.com/pocketbase/pocketbase/actions/workflows/release.yaml" target="_blank" rel="noopener"><img src="https://github.com/pocketbase/pocketbase/actions/workflows/release.yaml/badge.svg" alt="build" /></a>
-    <a href="https://github.com/pocketbase/pocketbase/releases" target="_blank" rel="noopener"><img src="https://img.shields.io/github/release/pocketbase/pocketbase.svg" alt="Latest releases" /></a>
-    <a href="https://pkg.go.dev/github.com/pocketbase/pocketbase" target="_blank" rel="noopener"><img src="https://godoc.org/github.com/pocketbase/pocketbase?status.svg" alt="Go package documentation" /></a>
+    <a href="https://github.com/bankole2000/pocketbase/actions/workflows/release.yaml" target="_blank" rel="noopener"><img src="https://github.com/bankole2000/pocketbase/actions/workflows/release.yaml/badge.svg" alt="build" /></a>
+    <a href="https://github.com/bankole2000/pocketbase/releases" target="_blank" rel="noopener"><img src="https://img.shields.io/github/release/pocketbase/pocketbase.svg" alt="Latest releases" /></a>
+    <a href="https://pkg.go.dev/github.com/bankole2000/pocketbase" target="_blank" rel="noopener"><img src="https://godoc.org/github.com/bankole2000/pocketbase?status.svg" alt="Go package documentation" /></a>
 </p>
 
 [PocketBase](https://pocketbase.io) is an open source Go backend that includes:
@@ -37,10 +37,10 @@ You could also check the recommendations in https://pocketbase.io/docs/how-to-us
 
 ### Use as standalone app
 
-You could download the prebuilt executable for your platform from the [Releases page](https://github.com/pocketbase/pocketbase/releases).
+You could download the prebuilt executable for your platform from the [Releases page](https://github.com/bankole2000/pocketbase/releases).
 Once downloaded, extract the archive and run `./pocketbase serve` in the extracted directory.
 
-The prebuilt executables are based on the [`examples/base/main.go` file](https://github.com/pocketbase/pocketbase/blob/master/examples/base/main.go) and comes with the JS VM plugin enabled by default which allows to extend PocketBase with JavaScript (_for more details please refer to [Extend with JavaScript](https://pocketbase.io/docs/js-overview/)_).
+The prebuilt executables are based on the [`examples/base/main.go` file](https://github.com/bankole2000/pocketbase/blob/master/examples/base/main.go) and comes with the JS VM plugin enabled by default which allows to extend PocketBase with JavaScript (_for more details please refer to [Extend with JavaScript](https://pocketbase.io/docs/js-overview/)_).
 
 ### Use as a Go framework/toolkit
 
@@ -58,8 +58,8 @@ Here is a minimal example:
     import (
         "log"
 
-        "github.com/pocketbase/pocketbase"
-        "github.com/pocketbase/pocketbase/core"
+        "github.com/bankole2000/pocketbase"
+        "github.com/bankole2000/pocketbase/core"
     )
 
     func main() {
@@ -142,7 +142,7 @@ You are free to do whatever you want with it, even offering it as a paid service
 You could help continuing its development by:
 
 - [Contribute to the source code](CONTRIBUTING.md)
-- [Suggest new features and report issues](https://github.com/pocketbase/pocketbase/issues)
+- [Suggest new features and report issues](https://github.com/bankole2000/pocketbase/issues)
 
 PRs for new OAuth2 providers, bug fixes, code optimizations and documentation improvements are more than welcome.
 

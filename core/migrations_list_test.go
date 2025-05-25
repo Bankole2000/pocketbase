@@ -3,7 +3,7 @@ package core_test
 import (
 	"testing"
 
-	"github.com/pocketbase/pocketbase/core"
+	"github.com/bankole2000/pocketbase/core"
 )
 
 func TestMigrationsList(t *testing.T) {

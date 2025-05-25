@@ -4,8 +4,8 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/bankole2000/pocketbase/core"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
-	"github.com/pocketbase/pocketbase/core"
 )
 
 func collectionsImport(e *core.RequestEvent) error {

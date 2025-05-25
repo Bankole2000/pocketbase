@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"strings"
 
-	"github.com/pocketbase/pocketbase/tools/search"
-	"github.com/pocketbase/pocketbase/tools/tokenizer"
+	"github.com/bankole2000/pocketbase/tools/search"
+	"github.com/bankole2000/pocketbase/tools/tokenizer"
 )
 
 // Pick converts data into a []any, map[string]any, etc. (using json marshal->unmarshal)

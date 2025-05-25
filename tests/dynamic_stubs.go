@@ -4,8 +4,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/pocketbase/pocketbase/core"
-	"github.com/pocketbase/pocketbase/tools/types"
+	"github.com/bankole2000/pocketbase/core"
+	"github.com/bankole2000/pocketbase/tools/types"
 )
 
 func StubOTPRecords(app core.App) error {

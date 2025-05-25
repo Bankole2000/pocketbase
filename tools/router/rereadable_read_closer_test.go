@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/pocketbase/pocketbase/tools/router"
+	"github.com/bankole2000/pocketbase/tools/router"
 )
 
 func TestRereadableReadCloser(t *testing.T) {

@@ -6,8 +6,8 @@ import (
 	"strings"
 
 	"github.com/pocketbase/dbx"
-	"github.com/pocketbase/pocketbase/tools/inflector"
-	"github.com/pocketbase/pocketbase/tools/list"
+	"github.com/bankole2000/pocketbase/tools/inflector"
+	"github.com/bankole2000/pocketbase/tools/list"
 )
 
 // ResolverResult defines a single FieldResolver.Resolve() successfully parsed result.

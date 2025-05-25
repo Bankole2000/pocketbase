@@ -7,10 +7,10 @@ import (
 	"strings"
 
 	"github.com/pocketbase/dbx"
-	"github.com/pocketbase/pocketbase/tools/dbutils"
-	"github.com/pocketbase/pocketbase/tools/hook"
-	"github.com/pocketbase/pocketbase/tools/security"
-	"github.com/pocketbase/pocketbase/tools/types"
+	"github.com/bankole2000/pocketbase/tools/dbutils"
+	"github.com/bankole2000/pocketbase/tools/hook"
+	"github.com/bankole2000/pocketbase/tools/security"
+	"github.com/bankole2000/pocketbase/tools/types"
 	"github.com/spf13/cast"
 )
 

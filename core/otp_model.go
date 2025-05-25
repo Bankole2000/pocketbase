@@ -5,7 +5,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/pocketbase/pocketbase/tools/types"
+	"github.com/bankole2000/pocketbase/tools/types"
 )
 
 const CollectionNameOTPs = "_otps"

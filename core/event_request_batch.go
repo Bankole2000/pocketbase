@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
-	"github.com/pocketbase/pocketbase/tools/hook"
+	"github.com/bankole2000/pocketbase/tools/hook"
 )
 
 type BatchRequestEvent struct {

@@ -6,8 +6,8 @@ import (
 	"testing"
 
 	"github.com/pocketbase/dbx"
-	"github.com/pocketbase/pocketbase/core"
-	"github.com/pocketbase/pocketbase/tests"
+	"github.com/bankole2000/pocketbase/core"
+	"github.com/bankole2000/pocketbase/tests"
 )
 
 func TestImportCollections(t *testing.T) {

@@ -6,9 +6,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/pocketbase/pocketbase/apis"
-	"github.com/pocketbase/pocketbase/core"
-	"github.com/pocketbase/pocketbase/tests"
+	"github.com/bankole2000/pocketbase/apis"
+	"github.com/bankole2000/pocketbase/core"
+	"github.com/bankole2000/pocketbase/tests"
 )
 
 func TestBodyLimitMiddleware(t *testing.T) {

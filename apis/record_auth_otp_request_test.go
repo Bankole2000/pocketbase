@@ -7,9 +7,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/pocketbase/pocketbase/core"
-	"github.com/pocketbase/pocketbase/tests"
-	"github.com/pocketbase/pocketbase/tools/types"
+	"github.com/bankole2000/pocketbase/core"
+	"github.com/bankole2000/pocketbase/tests"
+	"github.com/bankole2000/pocketbase/tools/types"
 )
 
 func TestRecordRequestOTP(t *testing.T) {

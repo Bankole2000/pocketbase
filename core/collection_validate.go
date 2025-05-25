@@ -9,11 +9,11 @@ import (
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/pocketbase/dbx"
-	"github.com/pocketbase/pocketbase/core/validators"
-	"github.com/pocketbase/pocketbase/tools/dbutils"
-	"github.com/pocketbase/pocketbase/tools/list"
-	"github.com/pocketbase/pocketbase/tools/search"
-	"github.com/pocketbase/pocketbase/tools/types"
+	"github.com/bankole2000/pocketbase/core/validators"
+	"github.com/bankole2000/pocketbase/tools/dbutils"
+	"github.com/bankole2000/pocketbase/tools/list"
+	"github.com/bankole2000/pocketbase/tools/search"
+	"github.com/bankole2000/pocketbase/tools/types"
 )
 
 var collectionNameRegex = regexp.MustCompile(`^\w+$`)

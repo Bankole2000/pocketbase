@@ -9,12 +9,12 @@ import (
 	"time"
 
 	"github.com/pocketbase/dbx"
-	"github.com/pocketbase/pocketbase/core"
-	"github.com/pocketbase/pocketbase/mails"
-	"github.com/pocketbase/pocketbase/tools/router"
-	"github.com/pocketbase/pocketbase/tools/routine"
-	"github.com/pocketbase/pocketbase/tools/search"
-	"github.com/pocketbase/pocketbase/tools/security"
+	"github.com/bankole2000/pocketbase/core"
+	"github.com/bankole2000/pocketbase/mails"
+	"github.com/bankole2000/pocketbase/tools/router"
+	"github.com/bankole2000/pocketbase/tools/routine"
+	"github.com/bankole2000/pocketbase/tools/search"
+	"github.com/bankole2000/pocketbase/tools/security"
 )
 
 const (

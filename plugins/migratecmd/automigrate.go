@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/pocketbase/dbx"
-	"github.com/pocketbase/pocketbase/core"
+	"github.com/bankole2000/pocketbase/core"
 )
 
 // automigrateOnCollectionChange handles the automigration snapshot

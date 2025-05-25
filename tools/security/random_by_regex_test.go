@@ -7,7 +7,7 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/pocketbase/pocketbase/tools/security"
+	"github.com/bankole2000/pocketbase/tools/security"
 )
 
 func TestRandomStringByRegex(t *testing.T) {

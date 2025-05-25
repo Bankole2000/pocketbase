@@ -17,15 +17,15 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/pocketbase/dbx"
-	"github.com/pocketbase/pocketbase/tools/cron"
-	"github.com/pocketbase/pocketbase/tools/filesystem"
-	"github.com/pocketbase/pocketbase/tools/hook"
-	"github.com/pocketbase/pocketbase/tools/logger"
-	"github.com/pocketbase/pocketbase/tools/mailer"
-	"github.com/pocketbase/pocketbase/tools/routine"
-	"github.com/pocketbase/pocketbase/tools/store"
-	"github.com/pocketbase/pocketbase/tools/subscriptions"
-	"github.com/pocketbase/pocketbase/tools/types"
+	"github.com/bankole2000/pocketbase/tools/cron"
+	"github.com/bankole2000/pocketbase/tools/filesystem"
+	"github.com/bankole2000/pocketbase/tools/hook"
+	"github.com/bankole2000/pocketbase/tools/logger"
+	"github.com/bankole2000/pocketbase/tools/mailer"
+	"github.com/bankole2000/pocketbase/tools/routine"
+	"github.com/bankole2000/pocketbase/tools/store"
+	"github.com/bankole2000/pocketbase/tools/subscriptions"
+	"github.com/bankole2000/pocketbase/tools/types"
 	"github.com/spf13/cast"
 	"golang.org/x/sync/semaphore"
 )
@@ -1231,7 +1231,7 @@ func normalizeSQLLog(sql string) string {
 
 func (app *BaseApp) initAuxDB() error {
 	// note: renamed to "auxiliary" because "aux" is a reserved Windows filename
-	// (see https://github.com/pocketbase/pocketbase/issues/5607)
+	// (see https://github.com/bankole2000/pocketbase/issues/5607)
 	dbPath := filepath.Join(app.DataDir(), "auxiliary.db")
 
 	concurrentDB, err := app.config.DBConnect(dbPath)
@@ -1312,7 +1312,7 @@ func (app *BaseApp) registerBaseHooks() {
 		Func: func(e *ModelEvent) error {
 			if m, ok := e.Model.(FilesManager); ok && m.BaseFilesPath() != "" && supportFiles(e.Model) {
 				// ensure that there is a trailing slash so that the list iterator could start walking from the prefix dir
-				// (https://github.com/pocketbase/pocketbase/discussions/5246#discussioncomment-10128955)
+				// (https://github.com/bankole2000/pocketbase/discussions/5246#discussioncomment-10128955)
 				prefix := strings.TrimRight(m.BaseFilesPath(), "/") + "/"
 
 				// note: for now assume no context cancellation

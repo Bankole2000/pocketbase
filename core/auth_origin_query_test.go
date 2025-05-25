@@ -5,8 +5,8 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/pocketbase/pocketbase/core"
-	"github.com/pocketbase/pocketbase/tests"
+	"github.com/bankole2000/pocketbase/core"
+	"github.com/bankole2000/pocketbase/tests"
 )
 
 func TestFindAllAuthOriginsByRecord(t *testing.T) {

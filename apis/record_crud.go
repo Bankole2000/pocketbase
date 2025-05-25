@@ -10,14 +10,14 @@ import (
 	"time"
 
 	"github.com/pocketbase/dbx"
-	"github.com/pocketbase/pocketbase/core"
-	"github.com/pocketbase/pocketbase/forms"
-	"github.com/pocketbase/pocketbase/tools/filesystem"
-	"github.com/pocketbase/pocketbase/tools/inflector"
-	"github.com/pocketbase/pocketbase/tools/list"
-	"github.com/pocketbase/pocketbase/tools/router"
-	"github.com/pocketbase/pocketbase/tools/search"
-	"github.com/pocketbase/pocketbase/tools/security"
+	"github.com/bankole2000/pocketbase/core"
+	"github.com/bankole2000/pocketbase/forms"
+	"github.com/bankole2000/pocketbase/tools/filesystem"
+	"github.com/bankole2000/pocketbase/tools/inflector"
+	"github.com/bankole2000/pocketbase/tools/list"
+	"github.com/bankole2000/pocketbase/tools/router"
+	"github.com/bankole2000/pocketbase/tools/search"
+	"github.com/bankole2000/pocketbase/tools/security"
 )
 
 // bindRecordCrudApi registers the record crud api endpoints and

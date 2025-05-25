@@ -12,10 +12,10 @@ import (
 	_ "unsafe"
 
 	"github.com/pocketbase/dbx"
-	"github.com/pocketbase/pocketbase/core"
-	"github.com/pocketbase/pocketbase/tests"
-	"github.com/pocketbase/pocketbase/tools/logger"
-	"github.com/pocketbase/pocketbase/tools/mailer"
+	"github.com/bankole2000/pocketbase/core"
+	"github.com/bankole2000/pocketbase/tests"
+	"github.com/bankole2000/pocketbase/tools/logger"
+	"github.com/bankole2000/pocketbase/tools/mailer"
 )
 
 func TestNewBaseApp(t *testing.T) {

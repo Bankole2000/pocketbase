@@ -83,8 +83,10 @@ func sendRecordEventMessage(eventType string, action string, record *core.Record
 	failOnError(error, "Failed to convert message to JsonBytes")
 	rmqUrl := goDotEnvVariable("RABBITMQ_URL")
 	exchange := goDotEnvVariable("RABBITMQ_EXCHANGE")
+	queue := goDotEnvVariable("RABBITMQ_QUEUE")
 	// rmqUrl := os.Getenv("RABBITMQ_URL")
 	// exchange := os.Getenv("RABBITMQ_EXCHANGE")
+	// queue := os.Getenv("RABBITMQ_QUEUE")
 	conn, err := amqp.Dial(rmqUrl)
 	failOnError(err, "Failed to connect to RabbitMQ")
 	defer conn.Close()
@@ -104,6 +106,16 @@ func sendRecordEventMessage(eventType string, action string, record *core.Record
 	)
 	failOnError(err, "Failed to declare an exchange")
 
+	q, err := ch.QueueDeclare(
+		queue, // name
+		false, // durable
+		false, // delete when unused
+		false, // exclusive
+		false, // no-wait
+		nil,   // arguments
+	)
+	failOnError(err, "Failed to declare a queue")
+
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -118,7 +130,19 @@ func sendRecordEventMessage(eventType string, action string, record *core.Record
 			Body:        jsonBytes,
 			// Body:        []byte(body),
 		})
-	failOnError(err, "Failed to publish a message")
+	failOnError(err, "Failed to publish to exchange")
+
+	err = ch.PublishWithContext(ctx,
+		"", // exchange
+		q.Name,
+		false, // mandatory
+		false, // immediate
+		amqp.Publishing{
+			ContentType: "text/plain",
+			Body:        jsonBytes,
+			// Body:        []byte(body),
+		})
+	failOnError(err, "Failed to publish to queue")
 
 	log.Printf("Record [x] Sent %v => %v", message.Collection, message.Action)
 }

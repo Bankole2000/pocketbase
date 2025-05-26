@@ -18,7 +18,7 @@ import (
 	"github.com/bankole2000/pocketbase/plugins/migratecmd"
 	"github.com/bankole2000/pocketbase/tools/hook"
 
-	// "github.com/joho/godotenv"
+	"github.com/joho/godotenv"
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
@@ -64,27 +64,29 @@ func failOnError(err error, msg string) {
 
 // use godot package to load/read the .env file and
 // return the value of the key
-// func goDotEnvVariable(key string) string {
+func goDotEnvVariable(key string) string {
 
-// 	// load .env file
-// 	err := godotenv.Load(".env")
+	// load .env file
+	err := godotenv.Load(".env")
 
-// 	if err != nil {
-// 		log.Fatalf("Error loading .env file")
-// 	}
+	if err != nil {
+		log.Fatalf("Error loading .env file")
+	}
 
-// 	return os.Getenv(key)
-// }
+	return os.Getenv(key)
+}
 
 func sendRecordEventMessage(eventType string, action string, record *core.Record) {
 	message := PBRecordEvent{Action: strings.ToUpper(action), Collection: strings.ToUpper(record.Collection().Name), Record: record}
 	eventMessage := RecordServiceEvent{EventType: strings.ToUpper(eventType), Data: message, Origin: "POCKETBASE"}
 	jsonBytes, error := json.Marshal(eventMessage)
 	failOnError(error, "Failed to convert message to JsonBytes")
-	// rmqUrl := goDotEnvVariable("RABBITMQ_URL")
-	// exchange := goDotEnvVariable("RABBITMQ_EXCHANGE")
-	rmqUrl := os.Getenv("RABBITMQ_URL")
-	exchange := os.Getenv("RABBITMQ_EXCHANGE")
+	rmqUrl := goDotEnvVariable("RABBITMQ_URL")
+	exchange := goDotEnvVariable("RABBITMQ_EXCHANGE")
+	queue := goDotEnvVariable("RABBITMQ_QUEUE")
+	// rmqUrl := os.Getenv("RABBITMQ_URL")
+	// exchange := os.Getenv("RABBITMQ_EXCHANGE")
+	// queue := os.Getenv("RABBITMQ_QUEUE")
 	conn, err := amqp.Dial(rmqUrl)
 	failOnError(err, "Failed to connect to RabbitMQ")
 	defer conn.Close()
@@ -103,6 +105,16 @@ func sendRecordEventMessage(eventType string, action string, record *core.Record
 		nil,      // arguments
 	)
 	failOnError(err, "Failed to declare an exchange")
+
+	q, err := ch.QueueDeclare(
+		queue, // name
+		false, // durable
+		false, // delete when unused
+		false, // exclusive
+		false, // no-wait
+		nil,   // arguments
+	)
+	failOnError(err, "Failed to declare a queue")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -118,102 +130,114 @@ func sendRecordEventMessage(eventType string, action string, record *core.Record
 			Body:        jsonBytes,
 			// Body:        []byte(body),
 		})
-	failOnError(err, "Failed to publish a message")
-
-	log.Printf(" [x] Sent %v => %v", message.Collection, message.Action)
-}
-
-func sendCollectionEventMessage(eventType string, action string, collection *core.Collection) {
-	message := PBCollectionEvent{Action: strings.ToUpper(action), Collection: collection}
-	eventMessage := CollectionServiceEvent{EventType: strings.ToUpper(eventType), Data: message, Origin: "POCKETBASE"}
-	jsonBytes, error := json.Marshal(eventMessage)
-	failOnError(error, "Failed to convert message to JsonBytes")
-	// rmqUrl := goDotEnvVariable("RABBITMQ_URL")
-	// exchange := goDotEnvVariable("RABBITMQ_EXCHANGE")
-	rmqUrl := os.Getenv("RABBITMQ_URL")
-	exchange := os.Getenv("RABBITMQ_EXCHANGE")
-	conn, err := amqp.Dial(rmqUrl)
-	failOnError(err, "Failed to connect to RabbitMQ")
-	defer conn.Close()
-
-	ch, err := conn.Channel()
-	failOnError(err, "Failed to open a channel")
-	defer ch.Close()
-
-	err = ch.ExchangeDeclare(
-		exchange, // name
-		"fanout", // type
-		true,     // durable
-		false,    // auto-deleted
-		false,    // internal
-		false,    // no-wait
-		nil,      // arguments
-	)
-	failOnError(err, "Failed to declare an exchange")
-
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
+	failOnError(err, "Failed to publish to exchange")
 
 	err = ch.PublishWithContext(ctx,
-		exchange, // exchange
-		"",       // routing key
-		false,    // mandatory
-		false,    // immediate
+		"", // exchange
+		q.Name,
+		false, // mandatory
+		false, // immediate
 		amqp.Publishing{
 			ContentType: "text/plain",
 			Body:        jsonBytes,
 			// Body:        []byte(body),
 		})
-	failOnError(err, "Failed to publish a message")
+	failOnError(err, "Failed to publish to queue")
 
-	log.Printf(" [x] Sent %v => %v", message.Collection.Name, message.Action)
+	log.Printf("Record [x] Sent %v => %v", message.Collection, message.Action)
 }
 
-func sendModelEventMessage(eventType string, action string, collection string, model core.Model) {
-	message := PBModelEvent{Action: strings.ToUpper(action), Collection: collection, Model: model}
-	eventMessage := ModelServiceEvent{EventType: strings.ToUpper(eventType), Data: message, Origin: "POCKETBASE"}
-	jsonBytes, error := json.Marshal(eventMessage)
-	failOnError(error, "Failed to convert message to JsonBytes")
-	// rmqUrl := goDotEnvVariable("RABBITMQ_URL")
-	// exchange := goDotEnvVariable("RABBITMQ_EXCHANGE")
-	rmqUrl := os.Getenv("RABBITMQ_URL")
-	exchange := os.Getenv("RABBITMQ_EXCHANGE")
-	conn, err := amqp.Dial(rmqUrl)
-	failOnError(err, "Failed to connect to RabbitMQ")
-	defer conn.Close()
+// func sendCollectionEventMessage(eventType string, action string, collection *core.Collection) {
+// 	message := PBCollectionEvent{Action: strings.ToUpper(action), Collection: collection}
+// 	eventMessage := CollectionServiceEvent{EventType: strings.ToUpper(eventType), Data: message, Origin: "POCKETBASE"}
+// 	jsonBytes, error := json.Marshal(eventMessage)
+// 	failOnError(error, "Failed to convert message to JsonBytes")
+// 	rmqUrl := goDotEnvVariable("RABBITMQ_URL")
+// 	exchange := goDotEnvVariable("RABBITMQ_EXCHANGE")
+// 	// rmqUrl := os.Getenv("RABBITMQ_URL")
+// 	// exchange := os.Getenv("RABBITMQ_EXCHANGE")
+// 	conn, err := amqp.Dial(rmqUrl)
+// 	failOnError(err, "Failed to connect to RabbitMQ")
+// 	defer conn.Close()
 
-	ch, err := conn.Channel()
-	failOnError(err, "Failed to open a channel")
-	defer ch.Close()
+// 	ch, err := conn.Channel()
+// 	failOnError(err, "Failed to open a channel")
+// 	defer ch.Close()
 
-	err = ch.ExchangeDeclare(
-		exchange, // name
-		"fanout", // type
-		true,     // durable
-		false,    // auto-deleted
-		false,    // internal
-		false,    // no-wait
-		nil,      // arguments
-	)
-	failOnError(err, "Failed to declare an exchange")
+// 	err = ch.ExchangeDeclare(
+// 		exchange, // name
+// 		"fanout", // type
+// 		true,     // durable
+// 		false,    // auto-deleted
+// 		false,    // internal
+// 		false,    // no-wait
+// 		nil,      // arguments
+// 	)
+// 	failOnError(err, "Failed to declare an exchange")
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
+// 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+// 	defer cancel()
 
-	err = ch.PublishWithContext(ctx,
-		exchange, // exchange
-		"",       // routing key
-		false,    // mandatory
-		false,    // immediate
-		amqp.Publishing{
-			ContentType: "text/plain",
-			Body:        jsonBytes,
-			// Body:        []byte(body),
-		})
-	failOnError(err, "Failed to publish a message")
+// 	err = ch.PublishWithContext(ctx,
+// 		exchange, // exchange
+// 		"",       // routing key
+// 		false,    // mandatory
+// 		false,    // immediate
+// 		amqp.Publishing{
+// 			ContentType: "text/plain",
+// 			Body:        jsonBytes,
+// 			// Body:        []byte(body),
+// 		})
+// 	failOnError(err, "Failed to publish a message")
 
-	log.Printf(" [x] Sent %v => %v", message.Collection, message.Action)
-}
+// 	log.Printf("Collection [x] Sent %v => %v", message.Collection.Name, message.Action)
+// }
+
+// func sendModelEventMessage(eventType string, action string, collection string, model core.Model) {
+// 	message := PBModelEvent{Action: strings.ToUpper(action), Collection: collection, Model: model}
+// 	eventMessage := ModelServiceEvent{EventType: strings.ToUpper(eventType), Data: message, Origin: "POCKETBASE"}
+// 	jsonBytes, error := json.Marshal(eventMessage)
+// 	failOnError(error, "Failed to convert message to JsonBytes")
+// 	rmqUrl := goDotEnvVariable("RABBITMQ_URL")
+// 	exchange := goDotEnvVariable("RABBITMQ_EXCHANGE")
+// 	// rmqUrl := os.Getenv("RABBITMQ_URL")
+// 	// exchange := os.Getenv("RABBITMQ_EXCHANGE")
+// 	conn, err := amqp.Dial(rmqUrl)
+// 	failOnError(err, "Failed to connect to RabbitMQ")
+// 	defer conn.Close()
+
+// 	ch, err := conn.Channel()
+// 	failOnError(err, "Failed to open a channel")
+// 	defer ch.Close()
+
+// 	err = ch.ExchangeDeclare(
+// 		exchange, // name
+// 		"fanout", // type
+// 		true,     // durable
+// 		false,    // auto-deleted
+// 		false,    // internal
+// 		false,    // no-wait
+// 		nil,      // arguments
+// 	)
+// 	failOnError(err, "Failed to declare an exchange")
+
+// 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+// 	defer cancel()
+
+// 	err = ch.PublishWithContext(ctx,
+// 		exchange, // exchange
+// 		"",       // routing key
+// 		false,    // mandatory
+// 		false,    // immediate
+// 		amqp.Publishing{
+// 			ContentType: "text/plain",
+// 			Body:        jsonBytes,
+// 			// Body:        []byte(body),
+// 		})
+// 	failOnError(err, "Failed to publish a message")
+
+// 	log.Printf("Model [x] Sent %v => %v", message.Collection, message.Action)
+// }
 
 func main() {
 	app := pocketbase.New()
@@ -222,53 +246,59 @@ func main() {
 	// Optional plugin flags:
 	// ---------------------------------------------------------------
 
-	// fires for every collection
-	app.OnCollectionAfterCreateSuccess().BindFunc(func(e *core.CollectionEvent) error {
-		// e.App
-		// e.Collection
-		sendCollectionEventMessage("COLLECTION", "CREATED", e.Collection)
-		return e.Next()
-	})
+	// // fires for every collection
+	// app.OnCollectionAfterCreateSuccess().BindFunc(func(e *core.CollectionEvent) error {
+	// 	// e.App
+	// 	// e.Collection
+	// 	sendCollectionEventMessage("COLLECTION", "CREATED", e.Collection)
+	// 	return e.Next()
+	// })
 
-	// fires for every collection
-	app.OnCollectionAfterUpdateSuccess().BindFunc(func(e *core.CollectionEvent) error {
-		// e.App
-		// e.Collection
-		sendCollectionEventMessage("COLLECTION", "UPDATED", e.Collection)
-		return e.Next()
-	})
+	// // fires for every collection
+	// app.OnCollectionAfterUpdateSuccess().BindFunc(func(e *core.CollectionEvent) error {
+	// 	// e.App
+	// 	// e.Collection
+	// 	sendCollectionEventMessage("COLLECTION", "UPDATED", e.Collection)
+	// 	return e.Next()
+	// })
 
-	// fires for every collection
-	app.OnCollectionAfterDeleteSuccess().BindFunc(func(e *core.CollectionEvent) error {
-		// e.App
-		// e.Collection
-		sendCollectionEventMessage("COLLECTION", "DELETED", e.Collection)
-		return e.Next()
-	})
+	// // fires for every collection
+	// app.OnCollectionAfterDeleteSuccess().BindFunc(func(e *core.CollectionEvent) error {
+	// 	// e.App
+	// 	// e.Collection
+	// 	sendCollectionEventMessage("COLLECTION", "DELETED", e.Collection)
+	// 	return e.Next()
+	// })
 
-	// fires for every model
-	app.OnModelAfterCreateSuccess().BindFunc(func(e *core.ModelEvent) error {
-		// e.App
-		// e.Model
-		sendModelEventMessage("MODEL", "CREATED", e.Model.TableName(), e.Model)
-		return e.Next()
-	})
+	// // fires for every model
+	// app.OnModelAfterCreateSuccess().BindFunc(func(e *core.ModelEvent) error {
+	// 	// e.App
+	// 	// e.Model
+	// 	if e.Model.TableName() != "_logs" {
+	// 		sendModelEventMessage("MODEL", "CREATED", e.Model.TableName(), e.Model)
+	// 	}
+	// 	return e.Next()
+	// })
 
-	// fires for every model
-	app.OnModelAfterUpdateSuccess().BindFunc(func(e *core.ModelEvent) error {
-		// e.App
-		// e.Model
-		sendModelEventMessage("MODEL", "UPDATED", e.Model.TableName(), e.Model)
-		return e.Next()
-	})
+	// // fires for every model
+	// app.OnModelAfterUpdateSuccess().BindFunc(func(e *core.ModelEvent) error {
+	// 	// e.App
+	// 	// e.Model
+	// 	if e.Model.TableName() != "_logs" {
+	// 		sendModelEventMessage("MODEL", "UPDATED", e.Model.TableName(), e.Model)
+	// 	}
+	// 	return e.Next()
+	// })
 
-	// fires for every model
-	app.OnModelAfterDeleteSuccess().BindFunc(func(e *core.ModelEvent) error {
-		// e.App
-		// e.Model
-		sendModelEventMessage("MODEL", "DELETED", e.Model.TableName(), e.Model)
-		return e.Next()
-	})
+	// // fires for every model
+	// app.OnModelAfterDeleteSuccess().BindFunc(func(e *core.ModelEvent) error {
+	// 	// e.App
+	// 	// e.Model
+	// 	if e.Model.TableName() != "_logs" {
+	// 		sendModelEventMessage("MODEL", "DELETED", e.Model.TableName(), e.Model)
+	// 	}
+	// 	return e.Next()
+	// })
 
 	// fires for every record
 	app.OnRecordAfterCreateSuccess().BindFunc(func(e *core.RecordEvent) error {

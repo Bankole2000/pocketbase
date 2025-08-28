@@ -12,11 +12,12 @@ import (
 	"strings"
 	"time"
 
-	validation "github.com/go-ozzo/ozzo-validation/v4"
-	"github.com/pocketbase/dbx"
 	"github.com/bankole2000/pocketbase/core"
+	"github.com/bankole2000/pocketbase/tools/auth"
 	"github.com/bankole2000/pocketbase/tools/dbutils"
 	"github.com/bankole2000/pocketbase/tools/filesystem"
+	validation "github.com/go-ozzo/ozzo-validation/v4"
+	"github.com/pocketbase/dbx"
 	"golang.org/x/oauth2"
 )
 
@@ -88,6 +89,19 @@ func recordAuthWithOAuth2(e *core.RequestEvent) error {
 	authUser, err := provider.FetchAuthUser(token)
 	if err != nil {
 		return firstApiError(err, e.BadRequestError("Failed to fetch OAuth2 user.", err))
+	}
+
+	// Apple currently returns the user's name only as part of the first redirect data response
+	// so we try to assign the [apis.oauth2SubscriptionRedirect] forwarded name.
+	if form.Provider == auth.NameApple && authUser.Name == "" {
+		nameKey := oauth2RedirectAppleNameStoreKeyPrefix + form.Code
+		name, ok := e.App.Store().Get(nameKey).(string)
+		if ok {
+			e.App.Store().Remove(nameKey)
+			authUser.Name = name
+		} else {
+			e.App.Logger().Debug("Missing or already removed Apple user's name")
+		}
 	}
 
 	var authRecord *core.Record

@@ -1,6 +1,7 @@
 package jsvm
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -14,14 +15,15 @@ import (
 	"testing"
 	"time"
 
-	"github.com/dop251/goja"
-	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/bankole2000/pocketbase/apis"
 	"github.com/bankole2000/pocketbase/core"
 	"github.com/bankole2000/pocketbase/tests"
 	"github.com/bankole2000/pocketbase/tools/filesystem"
 	"github.com/bankole2000/pocketbase/tools/mailer"
 	"github.com/bankole2000/pocketbase/tools/router"
+	"github.com/bankole2000/pocketbase/tools/types"
+	"github.com/dop251/goja"
+	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/spf13/cast"
 )
 
@@ -44,7 +46,7 @@ func TestBaseBindsCount(t *testing.T) {
 	vm := goja.New()
 	baseBinds(vm)
 
-	testBindsCount(vm, "this", 34, t)
+	testBindsCount(vm, "this", 35, t)
 }
 
 func TestBaseBindsSleep(t *testing.T) {
@@ -83,7 +85,7 @@ func TestBaseBindsReaderToString(t *testing.T) {
 	}
 }
 
-func TestBaseBindsToStringAndToBytes(t *testing.T) {
+func TestBaseBindsToString(t *testing.T) {
 	vm := goja.New()
 	baseBinds(vm)
 	vm.Set("scenarios", []struct {
@@ -106,10 +108,49 @@ func TestBaseBindsToStringAndToBytes(t *testing.T) {
 
 	_, err := vm.RunString(`
 		for (let s of scenarios) {
-			let result = toString(s.value)
+			let str = toString(s.value)
+			if (str != s.expected) {
+				throw new Error('[' + s.name + '] Expected string ' + s.expected + ', got ' + str);
+			}
+		}
+	`)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
 
-			if (result != s.expected) {
-				throw new Error('[' + s.name + '] Expected string ' + s.expected + ', got ' + result);
+func TestBaseBindsToBytes(t *testing.T) {
+	vm := goja.New()
+	baseBinds(vm)
+	vm.Set("bytesEqual", bytes.Equal)
+	vm.Set("scenarios", []struct {
+		Name     string
+		Value    any
+		Expected []byte
+	}{
+		{"null", nil, []byte{}},
+		{"string", "test", []byte("test")},
+		{"number", -12.4, []byte("-12.4")},
+		{"bool", true, []byte("true")},
+		{"arr", []int{1, 2, 3}, []byte{1, 2, 3}},
+		{"jsonraw", types.JSONRaw{1, 2, 3}, []byte{1, 2, 3}},
+		{"reader", strings.NewReader("test"), []byte("test")},
+		{"obj", map[string]any{"test": 123}, []byte(`{"test":123}`)},
+		{"struct", struct {
+			Name    string
+			private string
+		}{Name: "123", private: "456"}, []byte(`{"Name":"123"}`)},
+	})
+
+	_, err := vm.RunString(`
+		for (let s of scenarios) {
+			let b = toBytes(s.value)
+			if (!Array.isArray(b)) {
+				throw new Error('[' + s.name + '] Expected toBytes to return an array');
+			}
+
+			if (!bytesEqual(b, s.expected)) {
+				throw new Error('[' + s.name + '] Expected bytes ' + s.expected + ', got ' + b);
 			}
 		}
 	`)

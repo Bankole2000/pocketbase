@@ -2,5 +2,7 @@
 /*
 
 # exclude from the ignore filter
+!.env.example
 !.gitignore
 !main.go
+!pb_migrations

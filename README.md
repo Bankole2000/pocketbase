@@ -82,7 +82,7 @@ Here is a minimal example:
 
 2. To init the dependencies, run `go mod init myapp && go mod tidy`.
 
-3. To start the application, run `go run main.go serve`.
+3. To start the application, run `go run main.go serve --dir <projectname>`.
 
 4. To build a statically linked executable, you can run `CGO_ENABLED=0 go build` and then start the created executable with `./myapp serve`.
 
